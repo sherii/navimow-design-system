@@ -1,0 +1,51 @@
+{
+  "$comment": "Navimow 品牌颜色 token。来源：组件规范文档实测值。",
+  "color": {
+    "brand": {
+      "accent": {
+        "value": "#FF5A00",
+        "name": "Navimow Orange",
+        "usage": "品牌主色 / CTA / 高亮 / 播放指示点"
+      },
+      "ink": {
+        "value": "#1F1F1F",
+        "usage": "主文字色（深色主题底）"
+      },
+      "black": {
+        "value": "#000000",
+        "usage": "纯黑，深色页面底色"
+      }
+    },
+    "surface": {
+      "page": {
+        "value": "#FFFFFF",
+        "usage": "默认页面/模块底色（用户要求默认白底，非必要不做黑主题）"
+      },
+      "card-inactive": {
+        "value": "#F7F7F5",
+        "usage": "非当前项卡片底（层次靠底色+边框深浅，不靠阴影）"
+      }
+    },
+    "text": {
+      "primary": { "value": "#1F1F1F" },
+      "on-media": {
+        "value": "#FFFFFF",
+        "usage": "压在图/视频上的标题文字"
+      },
+      "subtitle-on-media": {
+        "value": "rgba(255,255,255,0.70)",
+        "usage": "压在图/视频上的副标题"
+      }
+    },
+    "scrim": {
+      "value": "rgba(0,0,0,0.55)",
+      "usage": "媒体底部文字可读性渐变遮罩（透明→黑）"
+    },
+    "icon-3d": {
+      "usage": "哑光软胶 3D 图标三色系（每块形状一个 linearGradient，单色系内明暗差约 20%，不要投影）",
+      "cream": { "from": "#FBF7EF", "to": "#EBE1CE" },
+      "blue": { "from": "#3D5BD9", "to": "#2743A8" },
+      "brick": { "from": "#CE4658", "to": "#A82C3E" }
+    }
+  }
+}

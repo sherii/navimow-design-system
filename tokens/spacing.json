@@ -1,0 +1,22 @@
+{
+  "$comment": "Navimow 间距/圆角/尺寸 token。来源：TrustBar 与拼贴卡片墙组件规范实测值。",
+  "radius": {
+    "card": { "value": "16px", "source": "拼贴卡片墙" }
+  },
+  "spacing": {
+    "gap-card-wide": { "value": "32px", "mobile": "20px", "source": "TrustBar 卡片间距" },
+    "gap-tight": { "value": "16px", "source": "拼贴卡片墙卡片间距" },
+    "padding-card": { "value": "16px", "source": "拼贴卡片墙文字层内边距" }
+  },
+  "size": {
+    "logo-strip-height": { "desktop": "96px", "mobile": "64px", "source": "TrustBar logo 统一高度" },
+    "card-width": { "desktop": "280px", "mobile": "200px", "source": "TrustBar 卡片宽" },
+    "collage-card-width": { "value": "240px", "source": "拼贴卡片墙单列宽（示例，可按栅格调整）" }
+  },
+  "motion": {
+    "autoplay-delay": { "value": "4500ms", "source": "TrustBar / 对齐 Hypershell 节奏" },
+    "carousel-speed": { "value": "700ms", "easing": "cubic-bezier(0.22,1,0.36,1)", "source": "TrustBar 切换过渡" },
+    "hover-scale": { "value": "1.05", "duration": "0.7s", "source": "拼贴卡片墙 hover 媒体放大" },
+    "tilt": { "rotateX": "±6deg", "rotateY": "±8deg", "perspective": "800px", "lerp": "0.12", "source": "拼贴卡片墙 3D 倾斜" }
+  }
+}

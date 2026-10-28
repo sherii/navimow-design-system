@@ -1,0 +1,37 @@
+# macOS
+.DS_Store
+._*
+.AppleDouble
+
+# Editors / OS
+*.swp
+*~
+.idea/
+.vscode/
+.obsidian/
+
+# Logs & temp
+*.log
+*.tmp
+node_modules/
+
+# Secrets — NEVER commit these (even in a private repo)
+*.pem
+.env
+.env.*
+# Figma personal access tokens
+figd_*
+*figd_*
+# Feishu / internal service credentials
+*feishu*
+*lark*token*
+# Internal API / service addresses
+*segway*
+*ai-service*
+
+# Local work-in-progress (not part of the published system)
+操作指令/
+项目记录/
+人员档案/
+Support Center 3.0 业务需求.png
+飞书CLI授权二维码*.png

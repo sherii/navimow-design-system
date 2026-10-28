@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navimow H5 Pro — Crafted to the Millimetre</title>
+<style>
+  :root{
+    --brand:#FF5A00;
+    --bg-dark:#1F1F1F;
+    --bg-black:#000000;
+    --bg-footer:#161616;
+    --white:#FFFFFF;
+    --gray:#8C8C8C;
+    --gray-soft:#F5F5F5;
+    --white-66:rgba(255,255,255,.66);
+    --white-44:rgba(255,255,255,.44);
+    --black-44:rgba(0,0,0,.44);
+    --black-66:rgba(0,0,0,.66);
+    --font:"Inter","MiSans Latin","Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    --content:1200px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--font);color:var(--white);background:var(--bg-black);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.5}
+  img{display:block;max-width:100%}
+  a{text-decoration:none;color:inherit}
+  button{font-family:var(--font)}
+  .wrap{max-width:var(--content);margin:0 auto;padding:0 24px}
+
+  /* ===== 滚动驱动动效（统一引擎：进场+出场+stagger） ===== */
+  .reveal{opacity:0;transform:translateY(60px);will-change:opacity,transform}
+  .reveal[data-anim="left"]{transform:translateX(80px)}
+  .reveal[data-anim="right"]{transform:translateX(-80px)}
+  .reveal[data-anim="zoom"]{transform:scale(.8)}
+  .reveal[data-anim="fade"]{transform:none}
+
+  /* Hero 标题 clip 揭示（逐行从下揭出） */
+  .hero-title{opacity:0;clip-path:inset(0 0 100% 0);transform:translateY(30px);will-change:opacity,transform,clip-path}
+
+  /* 数据 count-up */
+  .count{font-variant-numeric:tabular-nums}
+
+  /* 卡片图片 hover 缩放 */
+  .c .ph,.ksp-item .ic,.tab-panel .ph{transition:transform .6s var(--ease)}
+  .c:hover .ph{transform:scale(1.06)}
+  .c{transition:transform .4s var(--ease),border-color .4s,background .4s}
+  .c:hover{transform:translateY(-6px)}
+
+  /* Tab 面板切换过渡 */
+  .tab-panel.active{animation:tabIn .5s var(--ease)}
+  @keyframes tabIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+  /* 按钮 hover 微交互 */
+  .btn{transition:transform .3s var(--ease),background .3s,box-shadow .3s}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,90,0,.35)}
+  .btn.dark:hover{transform:translateY(-2px)}
+
+  /* 通用 kicker / 标题 */
+  .kicker{font-size:20px;font-weight:600;color:var(--brand);letter-spacing:.01em}
+  .kicker.sm{font-size:18px}
+  h2.sec{font-weight:600;letter-spacing:-.02em;line-height:1.12;margin-top:16px}
+  h2.sec.lg{font-size:64px}
+  h2.sec.md{font-size:48px}
+  h2.sec.xl{font-size:56px}
+  .lede{font-size:18px;color:var(--gray);margin-top:18px;max-width:62ch;line-height:1.6}
+
+  /* 按钮 */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 28px;height:48px;border-radius:999px;font-size:16px;font-weight:600;cursor:pointer;border:none;transition:transform .25s var(--ease),background .25s,opacity .25s}
+  .btn.primary{background:var(--brand);color:#fff}
+  .btn.primary:hover{opacity:.9;transform:translateY(-2px)}
+  .btn.dark{background:rgba(255,255,255,.08);color:#fff}
+  .btn.dark:hover{background:rgba(255,255,255,.16)}
+  .btn.light-ghost{background:rgba(0,0,0,.04);color:#000}
+  .btn.light-ghost:hover{background:rgba(0,0,0,.08)}
+  .link{display:inline-flex;align-items:center;gap:6px;font-size:18px;font-weight:400;color:var(--brand);margin-top:24px}
+
+  /* ===== 顶部广告条 ===== */
+  .topbar{background:#FAFAFA;color:rgba(0,0,0,.88)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:center;height:34px;gap:12px;font-size:12px;font-family:"Open Sans",var(--font)}
+  .topbar a{color:var(--brand);font-weight:600}
+
+  /* ===== 主导航 ===== */
+  .nav{position:absolute;top:34px;left:0;right:0;z-index:100;transition:background .3s,box-shadow .3s}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .nav .logo{font-weight:800;font-size:18px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;color:#fff}
+  .nav .menu{display:flex;gap:26px;align-items:center}
+  .nav .menu a{color:rgba(255,255,255,.85);font-size:14px;font-weight:500;transition:color .2s}
+  .nav .menu a:hover{color:#fff}
+  .nav .buy{background:var(--brand);color:#fff;font-size:14px;font-weight:600;padding:10px 22px;border-radius:20px}
+  .nav.sticky{position:fixed;top:0;background:rgba(0,0,0,.85);backdrop-filter:blur(14px)}
+
+  /* ===== 首屏 Hero ===== */
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;background:
+    radial-gradient(1100px 560px at 72% 24%,rgba(255,90,0,.22),transparent 58%),
+    radial-gradient(800px 480px at 16% 76%,rgba(65,93,116,.30),transparent 55%),
+    linear-gradient(155deg,#0a0d10 0%,#13181e 52%,#0a0d10 100%);
+    overflow:hidden}
+  .hero .hero-bg{position:absolute;inset:-6%;background:url(assets/hero.png) center/cover no-repeat;
+    opacity:.32;animation:kenburns 22s ease-in-out infinite alternate;will-change:transform}
+  @keyframes kenburns{from{transform:scale(1)}to{transform:scale(1.12)}}
+  .hero .wrap{position:relative;z-index:2;padding-top:150px;padding-bottom:140px}
+  .hero .eyebrow{font-size:24px;font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+  .hero .eyebrow::before{content:"";width:26px;height:3px;background:var(--brand)}
+  .hero h1{font-size:clamp(40px,6vw,72px);font-weight:600;letter-spacing:-.03em;line-height:1.06;max-width:14ch}
+  .hero h1 .accent{color:var(--brand)}
+  .hero .sub{font-size:18px;color:rgba(255,255,255,.7);margin-top:24px;max-width:48ch;line-height:1.6}
+  .hero .btns{display:flex;gap:14px;margin-top:38px}
+  .hero .scroll{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.16em;color:rgba(255,255,255,.4);animation:bob 2s infinite}
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+
+  /* ===== 次级导航（吸顶锚点） ===== */
+  .subnav{position:sticky;top:0;z-index:90;background:rgba(31,31,31,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+  .subnav .wrap{display:flex;align-items:center;gap:8px;height:64px;overflow-x:auto;scrollbar-width:none}
+  .subnav .wrap::-webkit-scrollbar{display:none}
+  .subnav .pn{font-size:18px;font-weight:600;color:#fff;margin-right:14px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .subnav .pn .tag{font-size:14px;color:var(--brand);font-weight:400}
+  .subnav a{font-size:14px;font-weight:600;color:var(--white-66);white-space:nowrap;padding:8px 14px;border-radius:18px;transition:.2s}
+  .subnav a:hover{color:#fff}
+  .subnav a.on{color:#fff;background:rgba(255,90,0,.18)}
+  .subnav a.buy{background:var(--brand);color:#fff}
+
+  /* ===== 深色 section 通用 ===== */
+  section.dark{background:var(--bg-dark)}
+  section.black{background:var(--bg-black)}
+  section.light{background:var(--white);color:var(--bg-black)}
+  section.light .lede{color:var(--black-44)}
+  section.light .kicker{color:var(--brand)}
+  .pad{padding:96px 0}
+
+  /* ===== KSP ===== */
+  /* ===== KSP：拼贴卡片墙样式（对齐设计系统组件 v1.2） ===== */
+  /* 3列×10行 Grid，每列跨度 4+6 / 7+3 / 5+5，四边严格对齐 */
+  .ksp-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    grid-template-rows:repeat(10, 88px);
+    gap:16px;
+    margin-top:52px;
+  }
+  .ksp-grid .ksp-item{
+    position:relative;
+    border-radius:16px;                  /* 拼贴卡 16 倒角 */
+    overflow:hidden;
+    background:#1A1A1A;
+    cursor:pointer;
+    isolation:isolate;
+    transform-style:preserve-3d;
+    will-change:transform;
+  }
+  .ksp-grid .ksp-item .media{position:absolute;inset:0;z-index:0;overflow:hidden}
+  .ksp-grid .ksp-item .media img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transform:scale(1.001);transition:transform .7s var(--ease);
+  }
+  /* 文字叠加层：边距16，默认左下 */
+  .ksp-grid .ksp-item .text{
+    position:absolute;inset:0;z-index:1;
+    display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;
+    padding:16px;color:#fff;pointer-events:none;
+  }
+  .ksp-grid .ksp-item .text h3{font-size:22px;font-weight:600;line-height:1.35;letter-spacing:.01em;text-shadow:0 1px 12px rgba(0,0,0,.5)}
+  .ksp-grid .ksp-item .text p{font-size:14px;font-weight:400;line-height:1.5;margin-top:6px;color:var(--white-70);text-shadow:0 1px 8px rgba(0,0,0,.55)}
+  /* 渐变遮罩：保证叠加文字可读 */
+  .ksp-grid .ksp-item .scrim{
+    position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:linear-gradient(to top,rgba(0,0,0,.62) 0%,rgba(0,0,0,.18) 45%,transparent 70%);
+  }
+  /* Hover：媒体轻微放大（3D 倾斜由 JS 驱动） */
+  .ksp-grid .ksp-item:hover .media img{transform:scale(1.06)}
+  /* 行跨度（每列之和恒为 10） */
+  .ksp-grid .ka{grid-row:1/span 4}
+  .ksp-grid .kb{grid-row:5/span 6}
+  .ksp-grid .kc{grid-row:1/span 7}
+  .ksp-grid .kd{grid-row:8/span 3}
+  .ksp-grid .ke{grid-row:1/span 5}
+  .ksp-grid .kf{grid-row:6/span 5}
+  /* 列位置（显式放置，防自动布局逃逸到隐式行） */
+  .ksp-grid .kcol1{grid-column:1}.ksp-grid .kcol2{grid-column:2}.ksp-grid .kcol3{grid-column:3}
+  .ksp-metric{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:56px;padding-top:40px;border-top:1px solid rgba(255,255,255,.08)}
+  .ksp-metric b{font-size:28px;font-weight:600;color:#fff;display:block}
+  .ksp-metric span{font-size:16px;color:var(--white-66)}
+
+  /* ===== 全屏卡片（scroll-pin 钉住 + 深色卖点） ===== */
+  /* 滚动轨道：提供 200vh 滚动空间，fullcard 在其中钉住 */
+  .fcwrap{height:200vh;position:relative}
+  .fullcard{position:sticky;top:0;height:100vh;display:flex;align-items:center;background:
+    radial-gradient(900px 500px at 78% 32%,rgba(255,90,0,.20),transparent 55%),
+    linear-gradient(150deg,#0b0e11 0%,#151a20 55%,#0b0e11 100%);overflow:hidden;
+    perspective:1200px}
+  .fullcard .wrap{position:relative;z-index:2;max-width:var(--content);margin:0 auto;width:100%}
+  .fullcard .wrap .fc-txt{max-width:52%}
+  /* 图片容器：随 --pi(图片进度) 从全屏缩到右侧，前段完成 */
+  .fullcard .visual{
+    position:absolute;top:0;bottom:0;
+    left:calc(54% * var(--pi,0));
+    width:calc(100% - 54% * var(--pi,0));
+    overflow:hidden;will-change:left,width}
+  .fullcard .visual .ph{
+    width:100%;height:100%;background-size:cover;background-position:center;opacity:.92;
+    transform:scale(calc(1.16 - .16 * var(--pi,0)));
+    transform-origin:center center;
+    transition:transform .1s linear;will-change:transform}
+  /* 文字：严格靠左，图片缩完后才浮现 */
+  .fullcard .fc-txt{opacity:0;transform:translateY(40px);will-change:opacity,transform}
+
+  /* ===== 数据强调 ===== */
+  .datagrid{display:flex;flex-direction:column;gap:36px;margin-top:48px}
+  .datagrid .row h3{font-size:48px;font-weight:600;color:var(--brand);letter-spacing:-.02em;line-height:1.1}
+  .datagrid .row p{font-size:18px;color:var(--gray);margin-top:4px}
+
+  /* ===== Tab ===== */
+  .tab-bar{display:flex;gap:10px;margin-top:36px;flex-wrap:wrap}
+  .tab-btn{padding:12px 22px;border-radius:24px;border:1px solid rgba(255,255,255,.14);background:transparent;font-size:16px;font-weight:600;color:var(--white-66);cursor:pointer;transition:.25s}
+  .tab-btn:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+  .tab-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}
+  .tab-panel{display:none;margin-top:30px}
+  .tab-panel.active{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
+  .tab-panel .ph{aspect-ratio:16/10;border-radius:16px;background-size:cover;background-position:center;background-color:#222;display:flex;align-items:center;justify-content:center;color:#666;font-size:14px}
+  .tab-panel h3{font-size:24px;font-weight:600;margin-bottom:12px}
+  .tab-panel p{font-size:18px;color:var(--gray);line-height:1.65}
+
+  /* 卡片网格 */
+  .card3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+  .card3 .c{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px}
+  .card3 .c h3{font-size:20px;font-weight:600;margin-bottom:10px}
+  .card3 .c p{font-size:18px;color:var(--white-66);line-height:1.6}
+  .card3 .c .ph{aspect-ratio:1/1;border-radius:12px;background-size:cover;background-position:center;background-color:#1c1c1c;margin-bottom:18px}
+  .ic2{width:56px;height:56px;border-radius:14px;background:rgba(255,90,0,.12);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:18px}
+
+  /* 对比卡片（浅色 section 用） */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px}
+  .cmp{border-radius:16px;padding:32px;border:1px solid rgba(0,0,0,.08)}
+  .cmp.bad{background:var(--gray-soft)}
+  .cmp.good{background:rgba(255,90,0,.06);border-color:rgba(255,90,0,.3)}
+  .cmp h3{font-size:24px;font-weight:600;margin-bottom:16px}
+  .cmp p{font-size:16px;color:var(--black-44);line-height:1.6;padding:6px 0}
+
+  /* ===== 浅色 section ===== */
+  section.light h2.sec{color:var(--bg-black)}
+  .light .card3 .c{background:#fff;border-color:rgba(0,0,0,.08)}
+  .light .card3 .c p{color:var(--black-44)}
+  .light .card3 .c h3{color:var(--bg-black)}
+  .light .card3 .c .ph{background:linear-gradient(135deg,#eee,#f6f6f6);background-size:cover;background-position:center}
+  .light .tab-btn{border-color:rgba(0,0,0,.14);color:var(--black-66)}
+  .light .tab-btn:hover{color:#000}
+  .light .tab-btn.active{background:var(--brand);border-color:var(--brand);color:#fff}
+  .light .tab-panel p{color:var(--black-44)}
+  .light .tab-panel h3{color:var(--bg-black)}
+
+  /* ===== Footer ===== */
+  footer{background:var(--bg-footer);padding:64px 0 32px;color:var(--white-44)}
+  .foot-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:32px}
+  .foot-col h4{color:#fff;font-size:12px;font-weight:600;margin-bottom:16px}
+  .foot-col a{display:block;font-size:12px;padding:5px 0;color:var(--white-44);transition:.2s}
+  .foot-col a:hover{color:#fff}
+  .foot-news{margin-top:44px;padding-top:28px;border-top:1px solid rgba(255,255,255,.12);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .foot-news span{color:#fff;font-size:12px;font-weight:600}
+  .foot-news input{flex:1;min-width:220px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:24px;padding:11px 20px;color:#fff;font-size:16px}
+  .copyright{margin-top:32px;font-size:12px;color:var(--white-44);text-align:center}
+
+  @media(max-width:920px){
+    .nav .menu{display:none}
+    /* KSP 拼贴：小屏改单列，取消固定行高，卡片恢复自然高度 */
+    .ksp-grid{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:220px}
+    .ksp-grid .kcol1,.ksp-grid .kcol2,.ksp-grid .kcol3{grid-column:1}
+    .ksp-grid .ka,.ksp-grid .kb,.ksp-grid .kc,.ksp-grid .kd,.ksp-grid .ke,.ksp-grid .kf{grid-row:auto}
+    .card3,.compare,.tab-panel{grid-template-columns:1fr}
+    .ksp-metric{grid-template-columns:1fr 1fr}
+    .foot-grid{grid-template-columns:1fr 1fr}
+    h2.sec.lg{font-size:40px}h2.sec.md{font-size:34px}h2.sec.xl{font-size:40px}
+    /* 小屏取消 scroll-pin，恢复普通滚动 */
+    .fcwrap{height:auto}
+    .fullcard{position:relative;height:auto;min-height:100vh}
+    .fullcard .visual{position:relative;width:100%;height:260px;margin-top:28px;left:0!important}
+    .fullcard .wrap .fc-txt{max-width:100%}
+  }
+</style>
+</head>
+<body>
+
+<!-- 广告条 -->
+<div class="topbar">
+  <div class="wrap">
+    <span>Join Rewards Program and benefit extra from every purchase.</span>
+    <a href="#">Join Now</a>
+  </div>
+</div>
+
+<!-- 主导航 -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="logo">NAVIMOW</div>
+    <div class="menu">
+      <a href="#">i Series</a><a href="#">H Series</a><a href="#">X Series</a>
+      <a href="#">Commercial Solutions</a><a href="#">Explore</a><a href="#">Support</a><a href="#">Deals</a>
+    </div>
+    <a class="buy" href="#">Where to Buy</a>
+  </div>
+</nav>
+
+<!-- 首屏 -->
+<header class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="wrap">
+    <div class="eyebrow reveal">Navimow H5 Pro Robotic Mower</div>
+    <h1 class="hero-title">Crafted to the <span class="accent">Millimetre.</span></h1>
+    <p class="sub reveal d2">Artisan Quality, Down to the Millimeter.</p>
+    <div class="btns reveal d3">
+      <button class="btn primary">Where to Buy</button>
+      <button class="btn dark">Watch Video</button>
+    </div>
+  </div>
+  <div class="scroll">SCROLL</div>
+</header>
+
+<!-- 次级导航 -->
+<div class="subnav">
+  <div class="wrap">
+    <span class="pn">Navimow H5 Pro <span class="tag">NEW</span></span>
+    <a href="#edge">EdgeMaestro™</a>
+    <a href="#xero">Xero-Turn™ 4WD</a>
+    <a href="#efls">EFLS™</a>
+    <a href="#vision">360° VisionFence™</a>
+    <a href="#specs">Specs</a>
+    <a class="buy" href="#">Buy Now</a>
+  </div>
+</div>
+
+<!-- KSP -->
+<section class="dark pad">
+  <div class="wrap">
+    <span class="kicker reveal">Power, Precision, and Ultimate Convenience.</span>
+    <h2 class="sec xl reveal d1">All-in-One</h2>
+    <div class="ksp-grid">
+      <!-- 列1：4+6 行 -->
+      <div class="ksp-item kcol1 ka reveal">
+        <div class="media"><img src="assets/vision-ir.png" alt=""></div>
+        <div class="scrim"></div>
+        <div class="text"><h3>EdgeMaestro™ Robotic Arm</h3><p>TRUE zero-edge mowing with PanoGuard living object detection</p></div>
+      </div>
+      <div class="ksp-item kcol1 kb reveal d1">
+        <div class="media"><img src="assets/xero-turn.png" alt=""></div>
+        <div class="scrim"></div>
+        <div class="text"><h3>Xero-Turn™ Turf-Safe Mowing</h3><p>Agile front-wheel steering.</p></div>
+      </div>
+
+      <!-- 列2：7+3 行 -->
+      <div class="ksp-item kcol2 kc reveal d1">
+        <div class="media"><img src="assets/efls.jpg" alt=""></div>
+        <div class="scrim"></div>
+        <div class="text"><h3>EFLS™ Tri-Fusion Positioning</h3><p>LiDAR + NRTK + Vision. Reliable everywhere.</p></div>
+      </div>
+      <div class="ksp-item kcol2 kd reveal d2">
+        <div class="media"><img src="assets/dropmow.jpg" alt=""></div>
+        <div class="scrim"></div>
+        <div class="text"><h3>Drop and Mow 2.0</h3><p>Set up in minutes. Automatic off-limit zone mapping.</p></div>
+      </div>
+
+      <!-- 列3：5+5 行 -->
+      <div class="ksp-item kcol3 ke reveal d2">
+        <div class="media"><img src="assets/drive-4wd.png" alt=""></div>
+        <div class="scrim"></div>
+        <div class="text"><h3>4WD + Suspension System</h3><p>Max 80% (38.6°) slopes &amp; 6 cm vertical obstacle clearance.</p></div>
+      </div>
+      <div class="ksp-item kcol3 kf reveal">
+        <div class="media"><img src="assets/vision-squirrel.png" alt=""></div>
+        <div class="scrim"></div>
+        <div class="text"><h3>360° VisionFence™</h3><p>Triple AI Camera + LiDAR + Infrared Detection</p></div>
+      </div>
+    </div>
+    <div class="ksp-metric reveal">
+      <div><b>Auto Plan</b><span>Auto Planner Smart Scheduling</span></div>
+      <div><b>Terrain AI</b><span>Adaptive Path Planning</span></div>
+      <div><b>3D Map</b><span>Real-Scene HD Mapping</span></div>
+      <div><b>58 dB(A)</b><span>Ultra-quiet operation</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 一级卖点：EdgeMaestro 全屏卡 -->
+<div class="fcwrap"><section class="fullcard" id="edge">
+  <div class="wrap">
+    <span class="kicker fc-txt" data-step="0.0">Groundbreaking EdgeMaestro™ Extendable Robotic Arm</span>
+    <h2 class="sec lg fc-txt" data-step="0.25">TRUE Zero-Edge Mowing</h2>
+    <p class="lede fc-txt" data-step="0.50">Our revolutionary EdgeMaestro™ tech features an extendable robotic arm for professional-grade trimming along every edge. Powered by PanoGuard 360° living object detection, the arm extends only when safe, ensuring beautiful cut-lines with uncompromising security.</p>
+    <div class="btns fc-txt" data-step="0.70" style="margin-top:34px"><button class="btn primary">Button</button><button class="btn dark">Button</button></div>
+    <a class="link fc-txt" data-step="0.85" href="#">Link</a>
+  </div>
+  <div class="visual"><div class="ph" style="background-image:url(assets/edge-maestro.png)"></div></div>
+</section></div>
+
+<!-- 垂直卡片：Edgesense + 轮播 -->
+<section class="dark pad" id="edge">
+  <div class="wrap">
+    <span class="kicker sm reveal">Edgesense™ for Seamless Precision</span>
+    <h2 class="sec md reveal d1">Flawless Trimming Intelligence, No Missing Spots Here.</h2>
+    <p class="lede reveal d2">Trims within 5 cm of walls and fences, even across slopes.</p>
+    <div class="btns reveal d3" style="margin-top:30px"><button class="btn primary">Button</button><button class="btn dark">Button</button></div>
+    <a class="link reveal d4" href="#">Link</a>
+    <div class="card3">
+      <div class="c reveal"><div class="ph" style="background-image:url(assets/floating-arm.jpg)"></div><h3>Omnidirectional Floating Arm</h3><p>The flexible design adapts to vertical bumps and rebounds off side obstacles for smooth, flawless finish.</p></div>
+      <div class="c reveal d1"><div class="ph" style="background-image:url(assets/cut-edge.jpg)"></div><h3>Cut-to-Edge Perfection</h3><p>Flawless trimming intelligence, no missing spots here.</p></div>
+      <div class="c reveal d2"><div class="ph" style="background-image:url(assets/blade-shield.png)"></div><h3>Rake Module</h3><p>A rake module pulls edge grass inward, while dual guide wheels minimize contact friction for smoother gliding. True edge-to-edge perfection.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 水平 Tab：Every Edge -->
+<section class="black pad">
+  <div class="wrap">
+    <span class="kicker reveal" style="color:var(--white-66)">We prioritize people</span>
+    <h2 class="sec md reveal d1">Every Edge, Accounted For.</h2>
+    <p class="lede reveal d2">Powered by the upgraded EdgeSense™ 2.0 algorithm, the mower intelligently adapts to every boundary—from hard edges and soft borders to complex shapes and path transitions—delivering true zero-edge mowing with no missed grass.</p>
+    <div class="tab-bar reveal d3">
+      <button class="tab-btn active" data-t="e1">Hard Edges</button>
+      <button class="tab-btn" data-t="e2">Plant-Heavy Edges</button>
+      <button class="tab-btn" data-t="e3">Irregular Edges</button>
+      <button class="tab-btn" data-t="e4">Path Transitions</button>
+    </div>
+    <div class="tab-panel active" id="e1"><div class="ph" style="background-image:url(assets/edge-hard.png)"></div><div><h3>Hard Edges</h3><p>Walls, wooden fences and patio borders.</p></div></div>
+    <div class="tab-panel" id="e2"><div class="ph" style="background-image:url(assets/edge-plant.png)"></div><div><h3>Plant-Heavy Edges</h3><p>Intelligently adapts to dense vegetation borders.</p></div></div>
+    <div class="tab-panel" id="e3"><div class="ph" style="background-image:url(assets/edge-irregular.jpg)"></div><div><h3>Irregular Edges</h3><p>Complex shapes covered with precision.</p></div></div>
+    <div class="tab-panel" id="e4"><div class="ph" style="background-image:url(assets/edge-path.png)"></div><div><h3>Path Transitions</h3><p>Smooth transitions across paths and narrow channels.</p></div></div>
+  </div>
+</section>
+
+<!-- 垂直卡片：3D Mapping 对比 -->
+<section class="black pad">
+  <div class="wrap">
+    <span class="kicker reveal">3D Mapping Decode Every Detail</span>
+    <h2 class="sec md reveal d1">Safer, Quieter, Cleaner Edge‑Trimming</h2>
+    <p class="lede reveal d2">Unlike trimming line solution, our extendable robotic arm delivers flawless edge results with enhanced safety and queit operation.</p>
+    <div class="compare reveal d3">
+      <div class="cmp bad reveal" data-anim="left" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)">
+        <h3 style="color:#fff">Trimming Line Solution</h3>
+        <p style="color:var(--white-66)">Scattered debris &amp; safety risks</p>
+        <p style="color:var(--white-66)">Flailing grass leads to turf damage and uneven results.</p>
+        <p style="color:var(--white-66)">Loud edge trimming.</p>
+      </div>
+      <div class="cmp good reveal" data-anim="right" style="background:rgba(255,90,0,.1);border-color:rgba(255,90,0,.3)">
+        <h3 style="color:#fff">Navimow H5 Pro</h3>
+        <p style="color:var(--white-66)">Cutting disc shield reduces debris splashback.</p>
+        <p style="color:var(--white-66)">Intelligent drop detection prevents tip-overs.</p>
+        <p style="color:var(--white-66)">Uniform, clean blade cuts.</p>
+        <p style="color:var(--white-66)">58 dB(A) quiet edge trimming.</p>
+      </div>
+    </div>
+    <a class="link reveal d4" href="#">Learn more about EFLS technology</a>
+  </div>
+</section>
+
+<!-- 二级卖点：Xero-Turn 全屏卡 -->
+<div class="fcwrap"><section class="fullcard" id="xero">
+  <div class="wrap">
+    <span class="kicker fc-txt" data-step="0.0">Pioneering Xero-Turn™ Technology</span>
+    <h2 class="sec lg fc-txt" data-step="0.25">Turf-Friendly Four-Wheel Drive, All-Terrain Mastery.</h2>
+    <p class="lede fc-txt" data-step="0.50">Our revolutionary EdgeMaestro™ tech features an extendable robotic arm for professional-grade trimming along every edge. Powered by PanoGuard 360° living object detection, the arm extends only when safe, ensuring beautiful cut-lines with uncompromising security.</p>
+    <div class="btns fc-txt" data-step="0.70" style="margin-top:34px"><button class="btn primary">Button</button><button class="btn dark">Button</button></div>
+    <a class="link fc-txt" data-step="0.85" href="#">Link</a>
+  </div>
+  <div class="visual"><div class="ph" style="background-image:url(assets/xero-turn.png)"></div></div>
+</section></div>
+
+<!-- 四驱/悬挂/割草高度 -->
+<section class="black pad">
+  <div class="wrap">
+    <span class="kicker sm reveal">Handles the Toughest Grass and Trickest Edges</span>
+    <h2 class="sec md reveal d1">Unmatched Obstacle Traversal</h2>
+    <p class="lede reveal d2">The H5 Pro's 4-wheel drive paired with advanced suspension effortlessly conquers steep slopes, tough surfaces and uneven terrain.</p>
+    <div class="card3">
+      <div class="c reveal"><div class="ph" style="background-image:url(assets/drive-4wd.png)"></div><h3>4-Wheel Drive</h3><p>Dual-disc system with 0.9 mm thick blades handles all grass types.</p></div>
+      <div class="c reveal d1"><div class="ph" style="background-image:url(assets/suspension.jpg)"></div><h3>Suspension System</h3><p>Automatically lifts blades for tall or hard grass.</p></div>
+      <div class="c reveal d2"><div class="ph" style="background-image:url(assets/blade-shield.png)"></div><h3>20-100mm Cutting Height</h3><p>±5 mm accuracy with up to 8 fine trimming layers for a perfect finish.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Xero-Turn 三特性 -->
+<section class="black pad">
+  <div class="wrap">
+    <span class="kicker reveal" style="color:var(--black-44)">We prioritize people</span>
+    <h2 class="sec md reveal d1">Revolutionary Xero-Turn™, Gentle Care for Every Patch.</h2>
+    <p class="lede reveal d2" style="color:var(--white-44)">We prioritize people – both in our products and our workplace culture.</p>
+    <div class="card3">
+      <div class="c reveal"><div class="ph" style="background-image:url(assets/slope.jpg)"></div><h3 style="color:#F5F5F5">Steep Slopes</h3><p>It delivers a true zero-radius turning experience, keeping the wheels rolling smoothly instead of scraping across your lawn.</p></div>
+      <div class="c reveal d1"><div class="ph" style="background-image:url(assets/pit.jpg)"></div><h3 style="color:#F5F5F5">Pits</h3><p>Our proprietary TCS system dynamically adjusts torque to all four wheels in real time. It prevents skidding on slippery surfaces and sudden-stop damage.</p></div>
+      <div class="c reveal d2"><div class="ph" style="background-image:url(assets/gravel.png)"></div><h3 style="color:#F5F5F5">Gravel Paths</h3><p>Fully sealed for durability, they outlast standard motors by 60% while eliminating gear noise for peaceful 45 dB(A).</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 三级卖点：EFLS 全屏卡 -->
+<div class="fcwrap"><section class="fullcard" id="efls">
+  <div class="wrap">
+    <span class="kicker fc-txt" data-step="0.0">EFLS™ (LiDAR + NRTK + Vision)</span>
+    <h2 class="sec lg fc-txt" data-step="0.25">All-Scenario Navigation, Effortless Auto Mapping.</h2>
+    <p class="lede fc-txt" data-step="0.50">Our revolutionary EdgeMaestro™ tech features an extendable robotic arm for professional-grade trimming along every edge. Powered by PanoGuard 360° living object detection, the arm extends only when safe, ensuring beautiful cut-lines with uncompromising security.</p>
+    <div class="btns fc-txt" data-step="0.70" style="margin-top:34px"><button class="btn primary">Button</button><button class="btn dark">Button</button></div>
+    <a class="link fc-txt" data-step="0.85" href="#">Link</a>
+  </div>
+  <div class="visual"><div class="ph" style="background-image:url(assets/efls.jpg)"></div></div>
+</section></div>
+
+<!-- 数据展示 3个 -->
+<section class="black pad">
+  <div class="wrap">
+    <span class="kicker reveal">Upgraded High-Res 3D LiDAR × Flagship AI Chip</span>
+    <h2 class="sec md reveal d1">ELFS™ Tri-Fusion Positioning, Unwavering Stability</h2>
+    <p class="lede reveal d2">LiDAR, Vision and NRTK fusion for precise, stable positioning.</p>
+    <div class="datagrid reveal d3">
+      <div class="row"><h3 class="count" data-count="512" data-suffix="K Points/Sec">0K Points/Sec</h3><p>Denser point clouds for precision.</p></div>
+      <div class="row"><h3 class="count" data-count="75" data-suffix=" m Detection Range">0 m Detection Range</h3><p>See farther for smoother planning.</p></div>
+      <div class="row"><h3 class="count" data-count="3" data-suffix="× AI Computing Power">0× AI Computing Power</h3><p>Stable performance in complex lawns.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 水平 Tab：定位场景 -->
+<section class="black pad">
+  <div class="wrap">
+    <span class="kicker reveal" style="color:var(--white-66)">We prioritize people</span>
+    <h2 class="sec md reveal d1">Stable and accurate positioning, providing precise coverage across all scenarios.</h2>
+    <div class="tab-bar reveal d2">
+      <button class="tab-btn active" data-t="p1">Under Trees</button>
+      <button class="tab-btn" data-t="p2">Open Terrain</button>
+      <button class="tab-btn" data-t="p3">Narrow Paths</button>
+      <button class="tab-btn" data-t="p4">Low Light</button>
+    </div>
+    <div class="tab-panel active" id="p1"><div class="ph" style="background-image:url(assets/pos-under.png)"></div><div><h3>Under Trees</h3><p>Walls, wooden fences and patio borders.</p></div></div>
+    <div class="tab-panel" id="p2"><div class="ph" style="background-image:url(assets/pos-open.png)"></div><div><h3>Open Terrain</h3><p>Precise positioning in open lawns.</p></div></div>
+    <div class="tab-panel" id="p3"><div class="ph" style="background-image:url(assets/pos-narrow.png)"></div><div><h3>Narrow Paths</h3><p>LiDAR active for tight channels.</p></div></div>
+    <div class="tab-panel" id="p4"><div class="ph" style="background-image:url(assets/pos-lowlight.png)"></div><div><h3>Low Light</h3><p>LiDAR + NRTK active at dusk.</p></div></div>
+  </div>
+</section>
+
+<!-- Drop & Mow 2.0 -->
+<section class="black pad">
+  <div class="wrap">
+    <span class="kicker reveal">3D Mapping Decode Every Detail</span>
+    <h2 class="sec md reveal d1">Drop &amp; Mow 2.0: One-Tap Start, Fully Automatic Mapping.</h2>
+    <p class="lede reveal d2" style="color:var(--white-66)">Drop &amp; Mow 2.0 enables instant out-of-box use, auto-identifying lawn borders and restricted zones without manual mapping.</p>
+    <a class="link reveal d3" href="#">Lifetime free Network RTK access.</a>
+    <div class="card3">
+      <div class="c reveal"><div class="ph" style="background-image:url(assets/dropmow.jpg)"></div><h3 style="color:var(--white-66)">No Antenna</h3><p>It delivers a true zero-radius turning experience.</p></div>
+      <div class="c reveal d1"><div class="ph" style="background-image:url(assets/map-3d.png)"></div><h3 style="color:var(--white-66)">No Manual Boundary Mapping</h3><p>Our proprietary TCS system dynamically adjusts torque.</p></div>
+      <div class="c reveal d2"><div class="ph" style="background-image:url(assets/pos-open.png)"></div><h3 style="color:var(--white-66)">Auto Off-Limit Zone Recognition</h3><p>Fully sealed for durability.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 深色：3D mapping -->
+<section class="dark pad">
+  <div class="wrap">
+    <span class="kicker reveal">Upgraded Auto Mapping Capability</span>
+    <h2 class="sec md reveal d1">Understand and manage your yard like never before.</h2>
+    <p class="lede reveal d2">Not only can i3 series auto-maps your yard precisely in minutes but also visualises it in vivid 3D, enabling superior accuracy and seamless editing.</p>
+    <div class="card3">
+      <div class="c reveal"><div class="ph" style="background-image:url(assets/map-3d.png)"></div><h3>GeoSketch™ 2.0</h3><p>It creates vivid full-color 3D yard models with complete terrain and object display for easy boundary adjustment.</p></div>
+      <div class="c reveal d1"><div class="ph" style="background-image:url(assets/pos-open.png)"></div><h3>Auto Planner</h3><p>Smart path planning for every zone.</p></div>
+      <div class="c reveal d2"><div class="ph" style="background-image:url(assets/family-white.png)"></div><h3>Real-Scene 3D Mapping &amp; Editing</h3><p>Precise, vivid 3D visualization.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 四级卖点：360° 全屏卡 -->
+<div class="fcwrap"><section class="fullcard" id="vision">
+  <div class="wrap">
+    <span class="kicker fc-txt" data-step="0.0">360° Biomimetic Perception System</span>
+    <h2 class="sec lg fc-txt" data-step="0.25">Full-Premieter Safety For People &amp; Wildlife</h2>
+    <p class="lede fc-txt" data-step="0.50">Our revolutionary EdgeMaestro™ tech features an extendable robotic arm for professional-grade trimming along every edge. Powered by PanoGuard 360° living object detection, the arm extends only when safe, ensuring beautiful cut-lines with uncompromising security.</p>
+    <div class="btns fc-txt" data-step="0.70" style="margin-top:34px"><button class="btn primary">Button</button><button class="btn dark">Button</button></div>
+    <a class="link fc-txt" data-step="0.85" href="#">Link</a>
+  </div>
+  <div class="visual"><div class="ph" style="background-image:url(assets/vision-squirrel.png)"></div></div>
+</section></div>
+
+<!-- 水平 Tab：360 VisionFence -->
+<section class="dark pad">
+  <div class="wrap">
+    <span class="kicker reveal" style="color:var(--white-66)">We prioritize people</span>
+    <h2 class="sec md reveal d1">360° VisionFence™ 24/7 Obstacle Detection</h2>
+    <p class="lede reveal d2" style="color:var(--white-44)">Powered by LiDAR, triple AI cameras and infrared thermal sensors, the H5 Pro identifies over 300 types of obstacles. Wildlife‑friendly perception reduces disruption to local creatures for eco‑conscious lawn care.</p>
+    <div class="tab-bar reveal d3">
+      <button class="tab-btn active" data-t="v1">1 cm Detection Accuracy</button>
+      <button class="tab-btn" data-t="v2">Suspended Objects</button>
+      <button class="tab-btn" data-t="v3">Low-Light Wildlife Detection</button>
+      <button class="tab-btn" data-t="v4">Path Transitions</button>
+    </div>
+    <div class="tab-panel active" id="v1"><div class="ph" style="background-image:url(assets/vision-pipe.jpg)"></div><div><h3>1 cm Detection Accuracy</h3><p>It reliably identifies slim vertical objects such as garden water taps, preventing potential collisions.</p></div></div>
+    <div class="tab-panel" id="v2"><div class="ph" style="background-image:url(assets/vision-suspend.jpg)"></div><div><h3>Suspended Objects</h3><p>Detects overhead and suspended obstacles.</p></div></div>
+    <div class="tab-panel" id="v3"><div class="ph" style="background-image:url(assets/vision-squirrel.png)"></div><div><h3>Low-Light Wildlife Detection</h3><p>Infrared detection protects wildlife at night.</p></div></div>
+    <div class="tab-panel" id="v4"><div class="ph" style="background-image:url(assets/edge-path.png)"></div><div><h3>Path Transitions</h3><p>Smooth navigation through transitions.</p></div></div>
+  </div>
+</section>
+
+<!-- 垂直卡片 Tab 切换：服务 -->
+<section class="light pad">
+  <div class="wrap">
+    <span class="kicker sm reveal">Premium Product, Premium Service.</span>
+    <h2 class="sec md reveal d1">Quality You Can Trust, Support You Can Count On.</h2>
+    <p class="lede reveal d2">Elevate your experience with seamless full offline service through authorized dealers! Service offerings and pricing may vary by dealer.</p>
+    <div class="card3">
+      <div class="c reveal"><div class="ph" style="background-image:url(assets/cover-x5.jpg)"></div><h3>In-Person Consultation</h3><p>Expert advice from local dealers.</p></div>
+      <div class="c reveal d1"><div class="ph" style="background-image:url(assets/xero-turn.png)"></div><h3>Front-Wheel Steering</h3><p>Responsive, agile handling.</p></div>
+      <div class="c reveal d2"><div class="ph" style="background-image:url(assets/family-white.png)"></div><h3>Efficient Local After-Sales Repair</h3><p>Local repair support with fast, on-site service from nearby authorized dealers.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 智能助手（浅色） -->
+<section class="light pad" id="specs">
+  <div class="wrap">
+    <span class="kicker sm reveal">Your Smart Lawn Care Assistant</span>
+    <h2 class="sec md reveal d1">Seamless Mowing Experience</h2>
+    <p class="lede reveal d2">Trims within 5 cm of walls and fences, even across slopes.</p>
+    <div class="card3">
+      <div class="c reveal"><div class="ic2">🧭</div><h3>Terrain Adapt 2.0</h3><p>Smart route planning eliminates extra turns in narrow zones to maximize mowing efficiency.</p></div>
+      <div class="c reveal d1"><div class="ic2">🔋</div><h3>Smart Battery Management</h3><p>Custom off‑peak charging tops‑up to your preset level to save energy and lower operating costs.</p></div>
+      <div class="c reveal d2"><div class="ic2">🅿️</div><h3>One-Click Auto Parking</h3><p>Tap in the App to direct your mower to target spots for storage and maintenance.</p></div>
+      <div class="c reveal"><div class="ic2">🌦️</div><h3>Weather Adaptation &amp; Flexible Scheduling</h3><p>Detects extreme weather, auto returns and resumes delayed lawn tasks.</p></div>
+      <div class="c reveal d1"><div class="ic2">🛡️</div><h3>Quad-Layer Security System</h3><p>Smart planning eliminates extra turns in narrow zones.</p></div>
+      <div class="c reveal d2"><div class="ic2">🎙️</div><h3>Smart Voice Control</h3><p>Command your mower completely hands-free.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col"><h4>Products</h4><a href="#">Navimow H Series</a><a href="#">Navimow i Series</a><a href="#">Navimow X3 Series</a><a href="#">Navimow Terranox</a></div>
+      <div class="foot-col"><h4>Where to Buy</h4><a href="#">Find a Store Near you</a><a href="#">Business Inquires</a></div>
+      <div class="foot-col"><h4>Explore</h4><a href="#">About Us</a><a href="#">User Gallery</a><a href="#">Newsroom</a><a href="#">Scenarios</a><a href="#">Blog</a></div>
+      <div class="foot-col"><h4>Support</h4><a href="#">Contact us</a><a href="#">FAQ</a><a href="#">UserManual</a><a href="#">Service Request</a></div>
+      <div class="foot-col"><h4>Policy&amp;Terms</h4><a href="#">Refund Policy</a><a href="#">Shipping Policy</a><a href="#">Limited Warranty Policy</a><a href="#">Privacy Policy</a><a href="#">Terms of Service</a></div>
+    </div>
+    <div class="foot-news">
+      <span>Get the lastest news from Navimow</span>
+      <input type="email" placeholder="Your email address">
+      <button class="btn primary" style="height:44px">Subscribe</button>
+    </div>
+    <div class="copyright">Copyright © 2021 Willand (Beijing) Technology Co., LTD. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const lerp=(a,b,t)=>a+(b-a)*t;
+
+  /* ===== 1. 统一滚动引擎：进场 + 出场 + stagger ===== */
+  const delayMap={d1:.08,d2:.16,d3:.24,d4:.32};
+  const revealEls=[...document.querySelectorAll('.reveal')];
+  const getDelay=el=>{for(const c of el.classList){if(delayMap[c]!=null)return delayMap[c]}return parseFloat(el.dataset.delay)||0};
+
+  function updateReveals(){
+    const vh=innerHeight;
+    revealEls.forEach(el=>{
+      const r=el.getBoundingClientRect();
+      const center=r.top+r.height/2 + getDelay(el)*vh;
+      const anim=el.dataset.anim;
+      let p,tx=0,ty=0,sc=1;
+      if(center>vh*0.55){                       // 进场段
+        p=clamp((vh-center)/(vh*0.45),0,1); ty=(1-p)*60;
+      }else if(center<vh*0.15){                 // 出场段
+        p=clamp(center/(vh*0.15),0,1); ty=-(1-p)*40;
+      }else{p=1}
+      if(anim==='left'){tx=(1-p)*80;ty=0}
+      else if(anim==='right'){tx=-(1-p)*80;ty=0}
+      else if(anim==='zoom'){sc=0.8+0.2*p;ty=0}
+      else if(anim==='fade'){ty=0}
+      el.style.opacity=p;
+      el.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`;
+    });
+    requestAnimationFrame(updateReveals);
+  }
+  requestAnimationFrame(updateReveals);
+
+  /* ===== 2. Hero 标题 clip 揭示（加载后播放一次） ===== */
+  const heroTitle=document.querySelector('.hero-title');
+  if(heroTitle){
+    // 页面加载后延迟触发
+    setTimeout(()=>{
+      heroTitle.style.transition='clip-path 1s var(--ease),opacity 1s var(--ease),transform 1s var(--ease)';
+      heroTitle.style.clipPath='inset(0 0 0 0)';
+      heroTitle.style.opacity='1';
+      heroTitle.style.transform='none';
+    },200);
+  }
+
+  /* ===== 3. count-up 数字滚动 ===== */
+  const counters=[...document.querySelectorAll('.count')];
+  function updateCounters(){
+    counters.forEach(el=>{
+      const r=el.getBoundingClientRect();
+      if(r.top<innerHeight*0.85 && r.bottom>0 && !el._started){
+        el._started=true;
+        const target=parseFloat(el.dataset.count);
+        const suffix=el.dataset.suffix||'';
+        const dur=1400,t0=performance.now();
+        (function tick(t){
+          const p=clamp((t-t0)/dur,0,1);
+          const ease=1-Math.pow(1-p,3);
+          el.textContent=Math.round(target*ease)+suffix;
+          if(p<1)requestAnimationFrame(tick);
+        })(t0);
+      }
+    });
+    requestAnimationFrame(updateCounters);
+  }
+  requestAnimationFrame(updateCounters);
+
+  /* ===== 4. 主导航吸顶 ===== */
+  const nav=document.getElementById('nav');
+  const hero=document.getElementById('hero');
+  window.addEventListener('scroll',()=>{
+    nav.classList.toggle('sticky', window.scrollY > hero.offsetHeight - 40);
+  });
+
+  /* ===== 5. Tab 切换 ===== */
+  document.querySelectorAll('.tab-bar').forEach(bar=>{
+    const btns=bar.querySelectorAll('.tab-btn');
+    btns.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        btns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const scope=bar.closest('.wrap');
+        scope.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        const t=document.getElementById(btn.dataset.t);
+        if(t)t.classList.add('active');
+      });
+    });
+  });
+
+  /* ===== 5.5 次级导航滚动高亮 ===== */
+  const subnavLinks=[...document.querySelectorAll('.subnav a[href^="#"]')];
+  const sections=['edge','xero','efls','vision','specs'].map(id=>document.getElementById(id)).filter(Boolean);
+  function updateSubnav(){
+    let cur='';
+    const pos=window.scrollY + innerHeight*0.3;
+    sections.forEach(s=>{ if(s.offsetTop <= pos) cur=s.id; });
+    subnavLinks.forEach(a=>{
+      a.classList.toggle('on', a.getAttribute('href')==='#'+cur);
+    });
+  }
+  window.addEventListener('scroll',updateSubnav);
+
+  /* ===== 6. fullcard 动效：图片缩放 + 文字滚动浮现 + 鼠标3D ===== */
+  const fullcards=[...document.querySelectorAll('.fullcard')];
+  const fcState=fullcards.map(fc=>{
+    const st={rx:0,ry:0,trx:0,try:0,visual:fc.querySelector('.visual')};
+    fc.addEventListener('mousemove',e=>{
+      const r=fc.getBoundingClientRect();
+      const mx=(e.clientX-r.left)/r.width-.5;
+      const my=(e.clientY-r.top)/r.height-.5;
+      st.trx=-my*7; st.try=mx*9;
+    });
+    fc.addEventListener('mouseleave',()=>{st.trx=0;st.try=0;});
+    return st;
+  });
+
+  function updateFullcards(){
+    const vh=window.innerHeight;
+    fullcards.forEach((fc,i)=>{
+      const wrap=fc.parentElement;
+      const wr=wrap.getBoundingClientRect();
+      const p=clamp(-wr.top/vh,0,1);
+      const pi=clamp(p/0.55,0,1);
+      const pt=clamp((p-0.55)/0.45,0,1);
+      fc.style.setProperty('--pi',pi);
+      fc.querySelectorAll('.fc-txt').forEach(el=>{
+        const step=parseFloat(el.dataset.step);
+        const tp=clamp((pt-step)/0.16,0,1);
+        el.style.opacity=tp;
+        el.style.transform=`translateY(${(1-tp)*40}px)`;
+      });
+      const st=fcState[i];
+      st.rx=lerp(st.rx,st.trx,0.12);
+      st.ry=lerp(st.ry,st.try,0.12);
+      st.visual.style.transform=`rotateX(${st.rx}deg) rotateY(${st.ry}deg) scale(1.06)`;
+    });
+    requestAnimationFrame(updateFullcards);
+  }
+  requestAnimationFrame(updateFullcards);
+  /* ===== 7. KSP 拼贴卡：跟随鼠标 3D 倾斜（对齐拼贴组件） ===== */
+  document.querySelectorAll('.ksp-grid .ksp-item').forEach(card=>{
+    const rx={v:0}, ry={v:0}, trx={v:0}, try={v:0};
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const mx=(e.clientX-r.left)/r.width-.5;
+      const my=(e.clientY-r.top)/r.height-.5;
+      trx.v=-my*5; try.v=mx*6;
+    });
+    card.addEventListener('mouseleave',()=>{trx.v=0;try.v=0;});
+    (function loop(){
+      rx.v+=(trx.v-rx.v)*.12;
+      ry.v+=(try.v-ry.v)*.12;
+      card.style.transform=`perspective(800px) rotateX(${rx.v}deg) rotateY(${ry.v}deg)`;
+      requestAnimationFrame(loop);
+    })();
+  });
+</script>
+</body>
+</html>

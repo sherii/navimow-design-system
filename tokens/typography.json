@@ -1,0 +1,24 @@
+{
+  "$comment": "Navimow 字体 token。来源：组件规范文档实测值。",
+  "typography": {
+    "family": {
+      "value": "Inter",
+      "source": "Google Fonts",
+      "fallback": "system-ui, -apple-system, 'Segoe UI', sans-serif"
+    },
+    "weights": {
+      "regular": 400,
+      "semibold": 600,
+      "bold": 700,
+      "extrabold": 800,
+      "black": 900
+    },
+    "usage": {
+      "body": 400,
+      "caption": 600,
+      "headline": 700,
+      "campaign-headline": "800–900",
+      "note": "800/900 仅用于 campaign 类大标题（如 Creators 专题页），常规页面标题用 700"
+    }
+  }
+}

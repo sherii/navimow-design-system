@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navimow DS — TrustBar（奖项信任背书）</title>
+<style>
+/* ============================================================
+   Navimow Design System — TrustBar / Awards & Recognition  v3
+   白底 ｜ 无缝循环轮播 ｜ 点击卡片查看（无弹层、无放大）
+   ============================================================ */
+:root {
+  --navi-orange: #FF5A00;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #fff; }
+
+.trustbar {
+  --tb-bg: #FFFFFF;
+  --tb-fg: #1F1F1F;
+  --tb-muted: rgba(31,31,31,.56);
+  --tb-logo-h: 96px;          /* 所有 logo 统一高度 */
+  --tb-item-w: 280px;         /* 卡片宽 */
+  --tb-autoplay: 4500;        /* 停留时长 ms —— 对齐 Hypershell */
+  --tb-speed: 700;            /* 切换过渡 ms */
+  --tb-gap: 32px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--tb-bg);
+  color: var(--tb-fg);
+  padding: 104px 0 116px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---------- 头部（文字随当前奖项变化，桂冠选配） ---------- */
+.tb-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  margin-bottom: 72px;
+  padding: 0 24px;
+  min-height: 150px;
+}
+.tb-head .tb-laurel {
+  flex: none;
+  width: 72px; height: 110px;
+  opacity: 0;
+  transform: scale(.85);
+  transition: opacity .3s var(--ease-out), transform .3s var(--ease-out);
+}
+.tb-head .tb-laurel svg { width: 100%; height: 100%; }
+.tb-head .tb-laurel.is-on { opacity: 1; transform: scale(1); }
+.tb-head .tb-text {
+  text-align: center;
+  min-width: 0;
+  transition: opacity .3s var(--ease-out), transform .3s var(--ease-out);
+}
+.tb-head .tb-text.is-switching { opacity: 0; transform: translateY(8px); }
+/* 整体切换态：桂冠+文字同步消失/出现 */
+.tb-head.is-switching .tb-laurel { opacity: 0; transform: scale(.85) translateY(8px); }
+.tb-head.is-switching .tb-text { opacity: 0; transform: translateY(8px); }
+.tb-head h2 {
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.tb-head p { margin-top: 14px; font-size: 15px; color: var(--tb-muted); }
+
+/* ---------- 轮播视口 ---------- */
+.tb-viewport {
+  position: relative;
+  overflow: hidden;
+  /* 两端渐隐 */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.tb-stage {
+  display: flex;
+  align-items: stretch;
+  gap: var(--tb-gap);
+  will-change: transform;
+}
+.tb-slide {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--tb-item-w);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  border-radius: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: opacity .45s var(--ease-out);
+  opacity: .5;                              /* 非当前项压暗 */
+  user-select: none;
+}
+.tb-slide.is-active {
+  opacity: 1;
+}
+.tb-slide:hover { opacity: 1; }
+.tb-slide img {
+  height: var(--tb-logo-h);                 /* 统一高度 */
+  width: auto;
+  max-width: calc(var(--tb-item-w) - 56px);
+  object-fit: contain;
+  filter: grayscale(1) brightness(1.05) contrast(1.02);
+  opacity: .82;
+  transition: filter .35s var(--ease-out), opacity .35s var(--ease-out);
+  pointer-events: none;                     /* 点击落到 slide 上 */
+}
+.tb-slide.is-active img, .tb-slide:hover img {
+  filter: grayscale(0) brightness(1);
+  opacity: 1;
+}
+
+/* ---------- 无障碍 ---------- */
+@media (max-width: 768px) {
+  .trustbar { --tb-logo-h: 64px; --tb-item-w: 200px; --tb-gap: 20px; padding: 64px 0 72px; }
+  .tb-slide { height: 140px; }
+  .tb-head { margin-bottom: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tb-stage { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<section class="trustbar" aria-label="Awards and recognition">
+  <div class="tb-head">
+    <div class="tb-laurel" id="tb-laurel-l" aria-hidden="true">
+      <svg viewBox="0 0 48 64" fill="none"><g stroke="#1F1F1F" stroke-width="1.8" stroke-linecap="round"><path d="M36 3 C20 14 13 32 17 61"/><g fill="#1F1F1F"><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(30 10) rotate(-58)"/><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(24 18) rotate(-40)"/><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(20 27) rotate(-24)"/><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(18 36) rotate(-9)"/><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(18 45) rotate(6)"/><ellipse cx="0" cy="-6" rx="2.4" ry="6" transform="translate(20 54) rotate(18)"/></g></g></svg>
+    </div>
+    <div class="tb-text" id="tb-text">
+      <h2 id="tb-title">Award-Winning Robot Mowers,<br>Recognized Worldwide</h2>
+      <p id="tb-sub">Honored by 30+ leading media and design institutions across Europe &amp; North America.</p>
+    </div>
+    <div class="tb-laurel" id="tb-laurel-r" aria-hidden="true">
+      <svg viewBox="0 0 48 64" fill="none" style="transform:scaleX(-1)"><g stroke="#1F1F1F" stroke-width="1.8" stroke-linecap="round"><path d="M36 3 C20 14 13 32 17 61"/><g fill="#1F1F1F"><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(30 10) rotate(-58)"/><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(24 18) rotate(-40)"/><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(20 27) rotate(-24)"/><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(18 36) rotate(-9)"/><ellipse cx="0" cy="-6" rx="2.6" ry="6.5" transform="translate(18 45) rotate(6)"/><ellipse cx="0" cy="-6" rx="2.4" ry="6" transform="translate(20 54) rotate(18)"/></g></g></svg>
+    </div>
+  </div>
+
+  <div class="tb-viewport">
+    <div class="tb-stage" id="tb-stage"></div>
+  </div>
+</section>
+
+<script>
+/* ------------------------------------------------------------
+ * TrustBar 数据源
+ * name: 奖项全称 ｜ org: 颁奖机构/媒体 ｜ src: assets 下文件
+ * laurel: 选配——true 时头部文字两侧显示桂冠装饰
+ * headline: 选配——轮播到该奖项时头部主标题（支持 <br> 换行）
+ * subline: 选配——头部副文案；缺省时回退 DEFAULT_SUB
+ * ---------------------------------------------------------- */
+const DEFAULT_TITLE = "Award-Winning Robot Mowers,<br>Recognized Worldwide";
+const DEFAULT_SUB = "Honored by 30+ leading media and design institutions across Europe &amp; North America.";
+
+const NAVI_AWARDS = [
+  { name: "Red Dot Winner 2021",        org: "Red Dot Design Award, Germany",   src: "reddot-winner-21.svg",
+    laurel: true,  headline: "Red Dot Winner 2021",           subline: "Navimow X3 Series — Red Dot Design Award, Germany" },
+  { name: "iF Design Award 2022",       org: "iF International Forum Design",   src: "if-22-design.svg",
+    laurel: true,  headline: "iF Design Award 2022",          subline: "Navimow H Series — iF International Forum Design" },
+  { name: "iF Gold Award 2022",         org: "iF International Forum Design",   src: "if-22-gold-award.svg",
+    laurel: true,  headline: "iF Gold Award 2022",            subline: "Navimow H Series — Top 1% of 10,000+ entries worldwide" },
+  { name: "Best of CES 2026",           org: "Android Authority",               src: "aa-best-of-ces-2026.svg",
+    laurel: true,  headline: "Best of CES 2026",              subline: "Android Authority — Best of Innovation, Robotics Category" },
+  { name: "Top Picks at CES 2026",      org: "Geekspin",                        src: "geekspin-toppicksatces-2026-1.svg",
+    laurel: false, headline: "Top Picks at CES 2026",          subline: "Geekspin editors' standout picks" },
+  { name: "Best of 2024",               org: "Forbes Vetted",                   src: "forbes-24-best-of.svg",
+    laurel: false, headline: "Best of 2024",                  subline: "Forbes Vetted — best-in-category roundup" },
+  { name: "Best Buy 2024",              org: "BBC Countryfile / Garden Reviews", src: "bbc-24-best-buy.svg",
+    laurel: false, headline: "Best Buy 2024",                 subline: "Independent garden-tech reviews" },
+  { name: "Tech Excellence",            org: "T3",                              src: "t3.svg" },
+  { name: "Editors' Choice",            org: "CNET",                            src: "cnet.svg" },
+  { name: "Featured Review",            org: "Engadget",                        src: "engadger.svg" },
+  { name: "Featured Review",            org: "The Verge",                       src: "the-verge.svg" },
+  { name: "Recommended",                org: "TechRadar",                       src: "tech-radar.svg" },
+  { name: "Best Robot Mower",           org: "Tom's Guide",                     src: "toms-guide.svg" },
+  { name: "Editors' Pick",              org: "Digital Trends",                  src: "digital-trends.svg" },
+  { name: "Tool of the Year 2024",      org: "Bob Vila",                        src: "bobvila.svg" },
+  { name: "Recommended",                org: "Reviewed",                        src: "reviewed.svg" },
+  { name: "Picks Award 2026",           org: "TWICE",                           src: "twice-picks.svg" },
+  { name: "Featured Review",            org: "Android Headlines",               src: "android-headlines.svg" },
+  { name: "Recommended",                org: "Braindegeek",                     src: "braindegeek.svg" },
+  { name: "Awards 2026",                org: "Gadgety",                         src: "gadgety-awards-2026.svg" },
+  { name: "Recommended",                org: "Tech Advisor",                    src: "tech-advisor.svg" },
+  { name: "Featured Review",            org: "TechPrincess",                    src: "techprincess.svg" },
+  { name: "Best of Year",               org: "Notebookcheck",                   src: "notebook.svg" },
+  { name: "Featured Review",            org: "Golem.de",                        src: "golem.svg" },
+  { name: "Test Winner",                org: "Computer Bild",                   src: "computer-bild.svg" },
+  { name: "Recommended",                org: "Clubicon",                        src: "clubic.svg" },
+  { name: "Featured Review",            org: "Journal du Geek",                 src: "journal-du-geek.svg" },
+  { name: "On a Aimé — On a Testé",     org: "Les Numériques community",        src: "on-a-aime-on-a-teste.svg" },
+  { name: "Featured",                   org: "MAISON",                          src: "maison.svg" },
+  { name: "Recommended",                org: "Stuff",                           src: "stuff.svg" },
+  { name: "Featured Review",            org: "Chinahandys",                     src: "chinahandys.svg" },
+  { name: "Smart Home Test",            org: "Smarthome Assistent",             src: "smarthome-assistent.svg" },
+  { name: "WELL Standard",              org: "International WELL Building Institute", src: "well-standard-full.svg" },
+  { name: "Featured",                   org: "L&B Home",                        src: "l-b-home.svg" },
+  { name: "Good Housekeeping Awards",   org: "Home Reno",                       src: "home-reno.svg" },
+];
+
+/* ---------- 程序化生成桂冠枝（沿贝塞尔曲线布叶） ---------- */
+function laurelSVG() {
+  const P0 = [40, 78], P1 = [18, 58], P2 = [10, 30], P3 = [26, 3];
+  const pt = t => {
+    const u = 1 - t;
+    return [
+      u*u*u*P0[0] + 3*u*u*t*P1[0] + 3*u*t*t*P2[0] + t*t*t*P3[0],
+      u*u*u*P0[1] + 3*u*u*t*P1[1] + 3*u*t*t*P2[1] + t*t*t*P3[1],
+    ];
+  };
+  const tg = t => {          /* 切线角 */
+    const u = 1 - t;
+    const dx = 3*u*u*(P1[0]-P0[0]) + 6*u*t*(P2[0]-P1[0]) + 3*t*t*(P3[0]-P2[0]);
+    const dy = 3*u*u*(P1[1]-P0[1]) + 6*u*t*(P2[1]-P1[1]) + 3*t*t*(P3[1]-P2[1]);
+    return Math.atan2(dy, dx) * 180 / Math.PI;
+  };
+  const leafPath = (x, y, rot, len) => {
+    /* 细长叶片：两条二次贝塞尔拼成柳叶形 */
+    const w = len * 0.32;
+    return `<path d="M0 0 Q ${w} ${-len*0.45} 0 ${-len} Q ${-w} ${-len*0.45} 0 0 Z" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(1)})" fill="#1F1F1F"/>`;
+  };
+  let leaves = "";
+  const N = 10;
+  for (let i = 0; i < N; i++) {
+    const t = 0.06 + i * (0.88 / (N - 1));
+    const [x, y] = pt(t);
+    const ang = tg(t);
+    const side = i % 2 === 0 ? 1 : -1;             /* 左右交替 */
+    const rot = ang + 90 + side * 55;              /* +90: 叶片本地坐标以"上"为基准 */
+    const len = 15 - i * 0.75;                     /* 顶端叶片渐小 */
+    leaves += leafPath(x, y, rot, len);
+  }
+  return `<svg viewBox="0 0 52 82" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M40 78 C18 58 10 30 26 3" stroke="#1F1F1F" stroke-width="2" stroke-linecap="round" fill="none"/>
+    ${leaves}
+  </svg>`;
+}
+document.getElementById("tb-laurel-l").innerHTML = laurelSVG();
+document.getElementById("tb-laurel-r").innerHTML = laurelSVG().replace('<svg ', '<svg style="transform:scaleX(-1)" ');
+
+/* ---------- 无缝循环渲染：整组前后各克隆 BUFFER 张 ---------- */
+const BUFFER = 8;   /* 视口最多同时可见 ~5 张，8 张克隆足够兜底 */
+const stage = document.getElementById("tb-stage");
+
+function slideHTML(a, realIndex) {
+  return `
+  <div class="tb-slide" data-index="${realIndex}" role="button" tabindex="0" aria-label="${a.name} — ${a.org}">
+    <img src="assets/${a.src}" alt="${a.name}" loading="lazy" draggable="false">
+  </div>`;
+}
+const n = NAVI_AWARDS.length;
+stage.innerHTML =
+  NAVI_AWARDS.slice(n - BUFFER).map((a, i) => slideHTML(a, n - BUFFER + i)).join("") +
+  NAVI_AWARDS.map((a, i) => slideHTML(a, i)).join("") +
+  NAVI_AWARDS.slice(0, BUFFER).map((a, i) => slideHTML(a, i)).join("");
+
+const slides = [...stage.querySelectorAll(".tb-slide")];
+
+/* ---------- 无缝循环步进轮播（Hypershell 节奏） ---------- */
+const AUTOPLAY_MS = parseInt(getComputedStyle(document.querySelector(".trustbar")).getPropertyValue("--tb-autoplay")) || 4500;
+const SPEED_MS = 700;
+let current = 0;          /* 真实索引 0..n-1 */
+let pos = BUFFER;         /* 当前在克隆轨道中的位置 */
+let animating = false;
+
+function slideW() { return slides[0].offsetWidth + parseFloat(getComputedStyle(stage).gap); }
+
+function xFor(p) {
+  /* 让 slides[p] 居中 */
+  return slides[p].offsetLeft - (stage.parentElement.offsetWidth - slides[p].offsetWidth) / 2;
+}
+function applyState() {
+  slides.forEach((s, k) => {
+    /* 只给真实索引等于 current 的卡加高亮（克隆卡按 data-index 对应） */
+    s.classList.toggle("is-active", +s.dataset.index === current);
+  });
+  syncHead();
+}
+/* 头部文字 + 桂冠跟随当前奖项（淡出→换字→淡入） */
+const titleEl = document.getElementById("tb-title");
+const subEl = document.getElementById("tb-sub");
+const laurelL = document.getElementById("tb-laurel-l");
+const laurelR = document.getElementById("tb-laurel-r");
+const headEl = document.querySelector(".tb-head");
+let headTimer = null;
+
+function syncHead() {
+  const a = NAVI_AWARDS[current];
+  clearTimeout(headTimer);
+  /* 桂冠与文字作为整体同步消失（头部加 is-switching） */
+  headEl.classList.add("is-switching");
+  headTimer = setTimeout(() => {
+    titleEl.innerHTML = a.headline || DEFAULT_TITLE;
+    subEl.innerHTML = a.subline || DEFAULT_SUB;
+    const showLaurel = !!a.laurel;
+    laurelL.classList.toggle("is-on", showLaurel);
+    laurelR.classList.toggle("is-on", showLaurel);
+    /* 同步出现：移除头部整体切换态 */
+    headEl.classList.remove("is-switching");
+  }, 300);
+}
+function setX(x, withTransition) {
+  stage.style.transition = withTransition ? `transform ${SPEED_MS}ms cubic-bezier(0.22, 1, 0.36, 1)` : "none";
+  stage.style.transform = `translateX(${-x}px)`;
+}
+function goTo(realIndex, userAction = false, direction = 1) {
+  if (animating) return;
+  current = ((realIndex % n) + n) % n;
+  /* 目标位置：往当前方向找最近的、data-index === current 的克隆卡 */
+  let target = -1;
+  if (direction >= 0) {
+    for (let p = pos + 1; p <= pos + n; p++) { if (+slides[p].dataset.index === current) { target = p; break; } }
+  } else {
+    for (let p = pos - 1; p >= pos - n; p--) { if (+slides[p].dataset.index === current) { target = p; break; } }
+  }
+  animating = true;
+  setX(xFor(target), true);
+  pos = target;
+  applyState();
+  if (userAction) restartTimer();
+  /* 越过缓冲区边缘后：瞬时跳回中间等位区间，保持无限循环 */
+  setTimeout(() => {
+    if (pos >= n + BUFFER || pos < BUFFER) {
+      const center = BUFFER + current;   /* 中间整组里的对应位 */
+      setX(xFor(center), false);
+      pos = center;
+      /* 强制回流后再恢复过渡，避免下一次切换瞬移 */
+      void stage.offsetWidth;
+    }
+    animating = false;
+  }, SPEED_MS + 30);
+}
+function restartTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => goTo(current + 1, false, 1), AUTOPLAY_MS);
+}
+let timer = null;
+
+/* 交互：点击左/右卡片 → 查看上一张/下一张（带方向） */
+slides.forEach(s => s.addEventListener("click", () => {
+  const idx = +s.dataset.index;
+  const p = slides.indexOf(s);
+  const dir = p > pos ? 1 : -1;           /* 点右边的卡 = 下一张，点左边 = 上一张 */
+  goTo(idx, true, dir);
+}));
+document.querySelectorAll(".tb-slide").forEach(s =>
+  s.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); s.click(); } }));
+
+/* hover 暂停（Hypershell: pauseOnMouseEnter） */
+const viewport = document.querySelector(".tb-viewport");
+viewport.addEventListener("mouseenter", () => clearInterval(timer));
+viewport.addEventListener("mouseleave", restartTimer);
+
+/* 启动 */
+window.addEventListener("resize", () => { setX(xFor(pos), false); });
+applyState();
+setX(xFor(BUFFER), false);
+restartTimer();
+</script>
+</body>
+</html>
